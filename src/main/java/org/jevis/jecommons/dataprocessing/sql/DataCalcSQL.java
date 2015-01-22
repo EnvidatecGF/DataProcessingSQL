@@ -35,16 +35,11 @@ public class DataCalcSQL implements DataCalc{
 
         Locale.setDefault(Locale.US); //avoid the different form of decimal point
         
-//        DecimalFormat df = new DecimalFormat("0.###");//is this sentence necessary?
-//        for (JEVisSample row : sample_add) {
-//            row.setValue(df.format(row.getValueAsDouble() + value));
-//        }
-        
         BigDecimal num; //creat a "BigDeciaml" variable
         BigDecimal val=new BigDecimal(value); //creat a "BigDeciaml" variable and convert "value" to BigDecimal
         for (JEVisSample row : sample.getAllSamples()) {
             num=new BigDecimal(row.getValueAsString()); //the convertion is to avoid the number of decimals,because of double
-//            row.setValue(num.add(v));
+
             JEVisSample samp=sample.buildSample(row.getTimestamp(), num.add(val).doubleValue());//convert the result and it's time to typ JEVisSample
             sample_add.add(samp);//put the result into a list
         }
@@ -249,14 +244,6 @@ public class DataCalcSQL implements DataCalc{
         BigDecimal[] time_interval = new BigDecimal[sample.getAllSamples().size() - 1];  //the interval between every two time points
         
         List<JEVisSample> cuted =sample.getSamples(from, to);
-//        List<JEVisSample> cuted = new ArrayList<JEVisSample>();
-//        for (JEVisSample row : sample.getAllSamples()) {
-//            boolean before = row.getTimestamp().isBefore(to) || row.getTimestamp().equals(to);
-//            boolean after = row.getTimestamp().isAfter(from) || row.getTimestamp().equals(from);
-//            if (before && after) {
-//                cuted.add(sample.buildSample(row.getTimestamp(), row.getValue()));
-//            }
-//        }
         
         DataCompareTime comparator = new DataCompareTime();
         Collections.sort(cuted, comparator);
@@ -286,15 +273,6 @@ public class DataCalcSQL implements DataCalc{
     public List<JEVisSample> intervalAlignment(JEVisAttribute sample, int period_s, int deviation_s) throws JEVisException {//, DateTime begin_time
         List<JEVisSample> sample_ia = new ArrayList<JEVisSample>();//creat a List to put the result
         DateTime right_time;
-
-//        for (JEVisSample row : sample.getAllSamples()) {
-//            boolean before = row.getTimestamp().isBefore(right_time.plusSeconds(deviation_s));
-//            boolean after = row.getTimestamp().isAfter(right_time.minusSeconds(deviation_s));
-//            if (after && before) {
-//                sample_ia.add(sample.buildSample(right_time, row.getValue()));
-//            }
-//            right_time = right_time.plusSeconds(period_s);
-//        }
         
         for(JEVisSample row : sample.getAllSamples()){
             int remainder=row.getTimestamp().getSecondOfDay()% period_s;//get the remainder of the sampled time/period
@@ -326,7 +304,6 @@ public class DataCalcSQL implements DataCalc{
         
         //calculate the differences
         for (int i = 0; i < sample.getAllSamples().size() - 1; i++) {
-//            dx[i] = sample.getDataList().get(i + 1).getTime().getMillis() - sample.getDataList().get(i).getTime().getMillis();
             dx[i] = sample.getAllSamples().get(i + 1).getTimestamp().getSecondOfDay() - sample.getAllSamples().get(i).getTimestamp().getSecondOfDay();
             if (dx[i] == 0) {
                 throw new IllegalArgumentException("X must bemontotonic. A duplicate " + "x-value was found");
@@ -363,15 +340,6 @@ public class DataCalcSQL implements DataCalc{
         rest1.remove(rest1.size()-1);//remove from
         List<JEVisSample> rest2 = sample.getSamples(to, sample.getLatestSample().getTimestamp());//cut the original elements,that don't need to be changed
         rest2.remove(0);//remove to
-//        for (JEVisSample row : sample.getAllSamples()) {
-//            boolean before = row.getTimestamp().isBefore(to) || row.getTimestamp().equals(to);
-//            boolean after = row.getTimestamp().isAfter(from) || row.getTimestamp().equals(from);
-//            if (before && after) {
-//                cuted.add(sample.buildSample(row.getTimestamp(), row.getValue()));
-//            }else{
-//                sample_i.add(sample.buildSample(row.getTimestamp(), row.getValue()));
-//            }
-//        }
         
         double[] dx = new double[cuted.size() - 1];
         double[] dy = new double[cuted.size() - 1];
@@ -968,18 +936,6 @@ public class DataCalcSQL implements DataCalc{
             }
         }
         return result;
-    }
-
-    public List<JEVisAttribute> subtraction(List<JEVisAttribute> attributes, double value) throws JEVisException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public List<JEVisSample> subtraction(JEVisAttribute attribute, List<JEVisAttribute> attributes) throws JEVisException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public List<JEVisAttribute> subtraction(List<JEVisAttribute> attributes, JEVisAttribute attribute) throws JEVisException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
