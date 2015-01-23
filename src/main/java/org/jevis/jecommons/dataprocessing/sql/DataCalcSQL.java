@@ -270,20 +270,29 @@ public class DataCalcSQL implements DataCalc{
      * the smallest unit of time,period_s and deviation_s is second
      */
     @Override
-    public List<JEVisSample> intervalAlignment(JEVisAttribute sample, int period_s, int deviation_s) throws JEVisException {//, DateTime begin_time
+    public List<JEVisSample> intervalAlignment(JEVisAttribute sample, DateTime begin_time, int period_s, int deviation_s) throws JEVisException {//, DateTime begin_time
         List<JEVisSample> sample_ia = new ArrayList<JEVisSample>();//creat a List to put the result
-        DateTime right_time;
+        DateTime right_time=begin_time;
         
-        for(JEVisSample row : sample.getAllSamples()){
-            int remainder=row.getTimestamp().getSecondOfDay()% period_s;//get the remainder of the sampled time/period
-            if(remainder <= period_s && remainder >= (period_s-deviation_s)){//the sampled time is earlier than the right time or equals to the right time
-                right_time=row.getTimestamp().plusSeconds(period_s-remainder);
-                sample_ia.add(sample.buildSample(right_time, row.getValue()));
-            }else if(remainder >= 0 && remainder <= deviation_s){//the sampled is later than the right time or the right time
-                right_time=row.getTimestamp().minusSeconds(remainder);
+        for (JEVisSample row : sample.getAllSamples()) {
+            boolean before = row.getTimestamp().isBefore(right_time.plusSeconds(deviation_s));
+            boolean after = row.getTimestamp().isAfter(right_time.minusSeconds(deviation_s));
+            if (after && before) {
                 sample_ia.add(sample.buildSample(right_time, row.getValue()));
             }
+            right_time = right_time.plusSeconds(period_s);
         }
+        
+//        for(JEVisSample row : sample.getAllSamples()){
+//            int remainder=row.getTimestamp().getSecondOfDay()% period_s;//get the remainder of the sampled time/period
+//            if(remainder <= period_s && remainder >= (period_s-deviation_s)){//the sampled time is earlier than the right time or equals to the right time
+//                right_time=row.getTimestamp().plusSeconds(period_s-remainder);
+//                sample_ia.add(sample.buildSample(right_time, row.getValue()));
+//            }else if(remainder >= 0 && remainder <= deviation_s){//the sampled is later than the right time or the right time
+//                right_time=row.getTimestamp().minusSeconds(remainder);
+//                sample_ia.add(sample.buildSample(right_time, row.getValue()));
+//            }
+//        }
 
         return sample_ia;
     }
@@ -665,10 +674,10 @@ public class DataCalcSQL implements DataCalc{
      * this function is to find,whether a data row has gaps.
      * if yes, put the begintime and endtime of gaps into a List, every two times is a pair
      */
-    public List<DateTime> findGap(JEVisAttribute sample, int period_s, int deviation_s) throws JEVisException {
+    public List<DateTime> findGap(JEVisAttribute sample, DateTime begin_time, int period_s, int deviation_s) throws JEVisException {
 //        System.out.println("If the function \"intervalAlignment\" is not used before the function \"findGap\",there will be a wrong result!!");
 
-        List<JEVisSample> list = intervalAlignment(sample, period_s, deviation_s);//use "intervalAlignment" to eliminate the deviation of sampled time
+        List<JEVisSample> list = intervalAlignment(sample,begin_time, period_s, deviation_s);//use "intervalAlignment" to eliminate the deviation of sampled time
         List<DateTime> gap_time = new ArrayList<DateTime>();//create a List to put the gap's time
 
         for (int i = 0; i < list.size() - 1; i++) {
