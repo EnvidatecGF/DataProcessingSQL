@@ -270,16 +270,46 @@ public class DataCalcSQL implements DataCalc{
     @Override
     public List<JEVisSample> intervalAlignment(List<JEVisSample> samples, DateTime begin_time, int period_s, int deviation_s) throws JEVisException {//, DateTime begin_time
         List<JEVisSample> sample_ia = new ArrayList<JEVisSample>();//creat a List to put the result
+        List<DateTime> time_scalar= new ArrayList<DateTime>();
         DateTime right_time=begin_time;
+                    
+        List<JEVisSample> sample_sort=sortByTime(samples,1);
         
-        for (JEVisSample row : samples) {
-            boolean before = row.getTimestamp().isBefore(right_time.plusSeconds(deviation_s));
-            boolean after = row.getTimestamp().isAfter(right_time.minusSeconds(deviation_s));
-            if (after && before) {
-                sample_ia.add(row.getAttribute().buildSample(right_time, row.getValue()));
-            }
+        while (right_time.plusSeconds(period_s).isBefore(sample_sort.get(sample_sort.size() - 1).getTimestamp())) {
+            time_scalar.add(right_time);
             right_time = right_time.plusSeconds(period_s);
         }
+        time_scalar.add(right_time);
+        int time_before=time_scalar.get(0).getSecondOfDay()-deviation_s;
+
+        for (JEVisSample row : sample_sort) {
+
+            for (int i = 0; i <= time_scalar.size() - 1; i++) {
+                boolean before = row.getTimestamp().isBefore(time_scalar.get(i).plusSeconds(deviation_s));
+                boolean after = row.getTimestamp().isAfter(time_scalar.get(i).minusSeconds(deviation_s));
+                if (after && before) {
+                    JEVisSample cash = row.getAttribute().buildSample(time_scalar.get(i), row.getValue());
+                    if (listToMap(sample_ia).containsKey(cash.getTimestamp())) {
+                        if (Math.abs(time_before - time_scalar.get(i).getSecondOfDay()) > Math.abs(row.getTimestamp().getSecondOfDay() - time_scalar.get(i).getSecondOfDay())) {
+                            sample_ia.set(sample_ia.size() - 1, cash);
+                        }
+                    } else {
+                        sample_ia.add(cash);
+                    }
+                    break;
+                }
+            }
+            time_before = row.getTimestamp().getSecondOfDay();
+        }
+        
+//        for (JEVisSample row : samples) {
+//            boolean before = row.getTimestamp().isBefore(right_time.plusSeconds(deviation_s));
+//            boolean after = row.getTimestamp().isAfter(right_time.minusSeconds(deviation_s));
+//            if (after && before) {
+//                sample_ia.add(row.getAttribute().buildSample(right_time, row.getValue()));
+//            }
+//            right_time = right_time.plusSeconds(period_s);
+//        }
         
 //        for(JEVisSample row : sample.getAllSamples()){
 //            int remainder=row.getTimestamp().getSecondOfDay()% period_s;//get the remainder of the sampled time/period
