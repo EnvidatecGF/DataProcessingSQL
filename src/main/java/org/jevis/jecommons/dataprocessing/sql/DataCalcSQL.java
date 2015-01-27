@@ -966,13 +966,18 @@ public class DataCalcSQL implements DataCalc{
         List<JEVisSample> originalDataRow = new ArrayList<JEVisSample>();
         List<JEVisSample> result = new ArrayList<JEVisSample>();
         originalDataRow.addAll(myAtt1.getAllSamples());
+        BigDecimal value = null;
+        
         for (JEVisSample o : originalDataRow) {
             if (result.isEmpty()) {
                 JEVisSample temp = myAtt1.buildSample(o.getTimestamp(), o.getValue());
                 result.add(temp);
+                value = new BigDecimal(o.getValueAsString());
             } else if (!result.isEmpty()) {
-                JEVisSample temp2 = myAtt1.buildSample(o.getTimestamp(), (Double.parseDouble(result.get(result.size() - 1).getValueAsString()) + o.getValueAsDouble()));
+                value = new BigDecimal(o.getValueAsString()).add(value);
+                JEVisSample temp2 = myAtt1.buildSample(o.getTimestamp(), value.doubleValue());
                 result.add(temp2);
+                value = new BigDecimal(result.get(result.size()-1).getValueAsString());
             }
         }
         return result;
