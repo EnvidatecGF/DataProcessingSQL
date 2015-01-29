@@ -967,7 +967,7 @@ public class DataCalcSQL implements DataCalc{
         List<JEVisSample> result = new ArrayList<JEVisSample>();
 //        originalDataRow.addAll(myAtt1.getAllSamples());
         BigDecimal value = null;
-        
+          
         for (JEVisSample o : samples) {
             if (result.isEmpty()) {
                 JEVisSample a = o.getAttribute().buildSample(o.getTimestamp(), o.getValue());
