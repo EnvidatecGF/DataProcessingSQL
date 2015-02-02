@@ -776,30 +776,30 @@ public class DataCalcSQL implements DataCalc{
     // data row x data row
     //fertig
     @Override
-    public List<JEVisSample> multiplication(JEVisAttribute f1, JEVisAttribute f2) throws ParseException, JEVisException {
+    public List<JEVisSample> multiplication(List<JEVisSample> samples1, List<JEVisSample> samples2) throws ParseException, JEVisException {
 
-        List<JEVisSample> factor1 = new ArrayList();
-        List<JEVisSample> factor2 = new ArrayList();
+//        List<JEVisSample> factor1 = new ArrayList();
+//        List<JEVisSample> factor2 = new ArrayList();
         List<JEVisSample> realResult = new ArrayList();
-        factor1 = f1.getAllSamples();
-        factor2 = f2.getAllSamples();
+//        factor1 = f1.getAllSamples();
+//        factor2 = f2.getAllSamples();
         boolean find = false;
         DecimalFormat df = new DecimalFormat("####.000");
-        for (Object o1 : factor1) {
+        for (JEVisSample o1 : samples1) {
             loop:
-            for (Object o2 : factor2) {
+            for (JEVisSample o2 : samples2) {
                 find = false;
                 //compare the timestample,when equals, then multip, when not equals, then find next.
-                if (((JEVisSample) o1).getTimestamp().equals(((JEVisSample) o2).getTimestamp())) {
-                    JEVisSample sample = f1.buildSample(((JEVisSample) o1).getTimestamp(), df.parse(df.format(((JEVisSample) o1).getValueAsDouble() * ((JEVisSample) o2).getValueAsDouble())));
-                    realResult.add(sample);
+                if (o1.getTimestamp().equals(o2.getTimestamp())) {
+                    JEVisSample a = o1.getAttribute().buildSample(((JEVisSample) o1).getTimestamp(), df.parse(df.format(((JEVisSample) o1).getValueAsDouble() * ((JEVisSample) o2).getValueAsDouble())));
+                    realResult.add(a);
                     find = true;
                     break loop;
                 }
             }
             if (find == false) {
-                JEVisSample sample = f1.buildSample(((JEVisSample) o1).getTimestamp(), df.parse(df.format(((JEVisSample) o1).getValueAsDouble())));
-                realResult.add(sample);
+                JEVisSample a = o1.getAttribute().buildSample(((JEVisSample) o1).getTimestamp(), df.parse(df.format(((JEVisSample) o1).getValueAsDouble())));
+                realResult.add(a);
             }
         }
         return realResult;
@@ -816,32 +816,32 @@ public class DataCalcSQL implements DataCalc{
 
     // data row / data row
     @Override
-    public List<JEVisSample> division(JEVisAttribute myAtt1, JEVisAttribute myAtt2) throws ParseException, JEVisException {
+    public List<JEVisSample> division(List<JEVisSample> samples1, List<JEVisSample> samples2) throws ParseException, JEVisException {
 
-        List<JEVisSample> temp1 = new ArrayList();
-        List<JEVisSample> temp2 = new ArrayList();
+//        List<JEVisSample> temp1 = new ArrayList();
+//        List<JEVisSample> temp2 = new ArrayList();
         List<JEVisSample> temp_result = new ArrayList();
 
         //check if the length of two data rows are same, if not, then division function will not be implenmented.         
-        if (myAtt1.getAllSamples().size() != myAtt2.getAllSamples().size()) {
+        if (samples1.size() != samples2.size()) {
             System.out.println("the size of two samples are not same");
             return temp_result;
         }
-        temp1 = myAtt1.getAllSamples();
-        temp2 = myAtt2.getAllSamples();
+//        temp1 = myAtt1.getAllSamples();
+//        temp2 = myAtt2.getAllSamples();
 
-        for (Object o1 : temp1) {
+        for (JEVisSample o1 : samples1) {
             loop:
-            for (Object o2 : temp2) {
+            for (JEVisSample o2 : samples2) {
                 //compare the timestample one by one,when equals, then multip, when not equals, then find next.
-                if (((JEVisSample) o1).getTimestamp().equals(((JEVisSample) o2).getTimestamp())) {
-                    if (((JEVisSample) o2).getValueAsDouble() != 0) {
-                        JEVisSample sample = myAtt1.buildSample(((JEVisSample) o1).getTimestamp(), ((JEVisSample) o1).getValueAsDouble() / ((JEVisSample) o2).getValueAsDouble(), "finish");
-                        temp_result.add(sample);
+                if (o1.getTimestamp().equals(o2.getTimestamp())) {
+                    if (o2.getValueAsDouble() != 0) {
+                        JEVisSample a =o1.getAttribute().buildSample(o1.getTimestamp(), o1.getValueAsDouble() / o2.getValueAsDouble(), "finish");
+                        temp_result.add(a);
                         break loop;
                     } else {
-                        JEVisSample sample = myAtt1.buildSample(((JEVisSample) o1).getTimestamp(), 0, "wrong, the divider shouldn't be 0");
-                        temp_result.add(sample);
+                        JEVisSample a = o1.getAttribute().buildSample(o1.getTimestamp(), 0, "wrong, the divider shouldn't be 0");
+                        temp_result.add(a);
                     }
                 }
             }
@@ -851,27 +851,27 @@ public class DataCalcSQL implements DataCalc{
 
 
     @Override
-    public double getAverageValue(JEVisAttribute myAtt1) throws JEVisException {
+    public double getAverageValue(List<JEVisSample> samples) throws JEVisException {
         double averagevalue = 0;
-        List<JEVisSample> temp = new ArrayList();
-        temp.addAll(myAtt1.getAllSamples());
-        for (Object o : temp) {
-            averagevalue = averagevalue + ((JEVisSample) o).getValueAsDouble();
+//        List<JEVisSample> temp = new ArrayList();
+//        temp.addAll(myAtt1.getAllSamples());
+        for (JEVisSample o : samples) {
+            averagevalue = averagevalue + o.getValueAsDouble();
         }
-        averagevalue = averagevalue / myAtt1.getAllSamples().size();
+        averagevalue = averagevalue / samples.size();
         return averagevalue;
     }
 
 
 
     @Override
-    public double getMaxValue(JEVisAttribute myAtt1) throws JEVisException {
+    public double getMaxValue(List<JEVisSample> samples) throws JEVisException {
 
         double max_value = 0;
-        List<JEVisSample> temp = new ArrayList();
-        temp.addAll(myAtt1.getAllSamples());
-        for (Object o : temp) {
-            max_value = (max_value > ((JEVisSample) o).getValueAsDouble()) ? max_value : ((JEVisSample) o).getValueAsDouble();
+//        List<JEVisSample> temp = new ArrayList();
+//        temp.addAll(myAtt1.getAllSamples());
+        for (JEVisSample o : samples) {
+            max_value = (max_value > o.getValueAsDouble()) ? max_value : o.getValueAsDouble();
         }
         return max_value;
     }
@@ -880,44 +880,44 @@ public class DataCalcSQL implements DataCalc{
 
     //Calculate the Mean Deviation    
     @Override
-    public double meanDeviation(JEVisAttribute myAtt1) throws JEVisException {
+    public double meanDeviation(List<JEVisSample> samples) throws JEVisException {
         double temp;
         double mean = 0;
-        temp = this.getAverageValue(myAtt1);
-        List<JEVisSample> tempp = new ArrayList();
-        tempp.addAll(myAtt1.getAllSamples());
-        for (Object o : tempp) {
-            mean = mean + Math.abs(((JEVisSample) o).getValueAsDouble() - temp);
+        temp = this.getAverageValue(samples);
+//        List<JEVisSample> tempp = new ArrayList();
+//        tempp.addAll(myAtt1.getAllSamples());
+        for (JEVisSample o : samples) {
+            mean = mean + Math.abs(o.getValueAsDouble() - temp);
         }
-        mean=mean / myAtt1.getAllSamples().size();
+        mean=mean / samples.size();
         return mean;
     }
     
 
     //Add shifttime to original timeaxis. 
     @Override
-    public List<JEVisSample> addShiftTime(JEVisAttribute myAtt1, int shiftTime) throws ParseException, JEVisException {
+    public List<JEVisSample> addShiftTime(List<JEVisSample> samples, int shiftTime) throws ParseException, JEVisException {
 
-        List<JEVisSample> temp = new ArrayList();
+//        List<JEVisSample> temp = new ArrayList();
         List<JEVisSample> result = new ArrayList();
-        temp.addAll(myAtt1.getAllSamples());
-        for (Object o : temp) {
-            JEVisSample sample = myAtt1.buildSample(((JEVisSample) o).getTimestamp().plusSeconds(shiftTime), ((JEVisSample) o).getValueAsDouble(), "finish");
-            result.add(sample);
+//        temp.addAll(myAtt1.getAllSamples());
+        for (JEVisSample o : samples) {
+            JEVisSample a = o.getAttribute().buildSample(o.getTimestamp().plusSeconds(shiftTime), o.getValueAsDouble(), "finish");
+            result.add(a);
         }
         return result;
     }
     
     //new added
     //Minus shifttime to original timeaxis. 
-    public List<JEVisSample> minusShiftTime(JEVisAttribute myAtt1, int shiftTime) throws ParseException, JEVisException {
+    public List<JEVisSample> minusShiftTime(List<JEVisSample> samples, int shiftTime) throws ParseException, JEVisException {
 
-        List<JEVisSample> temp = new ArrayList();
+//        List<JEVisSample> temp = new ArrayList();
         List<JEVisSample> result = new ArrayList();
-        temp.addAll(myAtt1.getAllSamples());
-        for (Object o : temp) {
-            JEVisSample sample = myAtt1.buildSample(((JEVisSample) o).getTimestamp().minusSeconds(shiftTime), ((JEVisSample) o).getValueAsDouble(), "Finish");
-            result.add(sample);
+//        temp.addAll(myAtt1.getAllSamples());
+        for (JEVisSample o : samples) {
+            JEVisSample a = o.getAttribute().buildSample(o.getTimestamp().minusSeconds(shiftTime),o.getValueAsDouble(), "Finish");
+            result.add(a);
         }
         return result;
     }
@@ -926,17 +926,17 @@ public class DataCalcSQL implements DataCalc{
  
     //only the value which smaller than setNumber can be stored.    
     @Override
-    public List<JEVisSample> lowPassFilter(JEVisAttribute myAtt1, double setNumber) throws ParseException, JEVisException {
-        List<JEVisSample> temp_original_datarow = new ArrayList();
+    public List<JEVisSample> lowPassFilter(List<JEVisSample> samples, double setNumber) throws ParseException, JEVisException {
+//        List<JEVisSample> temp_original_datarow = new ArrayList();
         List<JEVisSample> result = new ArrayList();
-        temp_original_datarow.addAll(myAtt1.getAllSamples());
-        for (Object o : temp_original_datarow) {
-            if (((JEVisSample) o).getValueAsDouble() < setNumber) {
-                JEVisSample sample = myAtt1.buildSample(((JEVisSample) o).getTimestamp(), setNumber, "finish");
-                result.add(sample);
+//        temp_original_datarow.addAll(myAtt1.getAllSamples());
+        for (JEVisSample o : samples) {
+            if (o.getValueAsDouble() < setNumber) {
+                JEVisSample a = o.getAttribute().buildSample(o.getTimestamp(), setNumber, "finish");
+                result.add(a);
             } else {
-                JEVisSample sample = myAtt1.buildSample(((JEVisSample) o).getTimestamp(), ((JEVisSample) o).getValueAsDouble(), "finish");
-                result.add(sample);
+                JEVisSample a = o.getAttribute().buildSample(((JEVisSample) o).getTimestamp(), ((JEVisSample) o).getValueAsDouble(), "finish");
+                result.add(a);
             }
         }
         return result;
@@ -945,14 +945,14 @@ public class DataCalcSQL implements DataCalc{
  
     //this function will considers the period as no matter how long you give
     @Override
-    public List<JEVisSample> derivation(JEVisAttribute myAtt1, int period) throws ParseException, JEVisException {
-        List<JEVisSample> temp_original_datarow = new ArrayList();
+    public List<JEVisSample> derivation(List<JEVisSample> samples, int period) throws ParseException, JEVisException {
+//        List<JEVisSample> temp_original_datarow = new ArrayList();
         List<JEVisSample> result = new ArrayList();
-        temp_original_datarow.addAll(myAtt1.getAllSamples());
-        for (Object o : temp_original_datarow) {
-            if (result.size() < (temp_original_datarow.size() - 1)) {
-                JEVisSample sample = myAtt1.buildSample(((JEVisSample) o).getTimestamp(), ((temp_original_datarow.get(temp_original_datarow.indexOf(o) + 1).getValueAsDouble() - ((JEVisSample) o).getValueAsDouble()) / period), "finish");
-                result.add(sample);
+//        temp_original_datarow.addAll(myAtt1.getAllSamples());
+        for (JEVisSample o : samples) {
+            if (result.size() < (samples.size() - 1)) {
+                JEVisSample a = o.getAttribute().buildSample(o.getTimestamp(), ((samples.get(samples.indexOf(o) + 1).getValueAsDouble() - o.getValueAsDouble()) / period), "finish");
+                result.add(a);
             }
         }
         return result;
@@ -962,20 +962,20 @@ public class DataCalcSQL implements DataCalc{
     //CumulativeDifferentialConverter function
     //little changed
     @Override
-    public List<JEVisSample> differentialCumulativeConverter(JEVisAttribute myAtt1) throws JEVisException {
-        List<JEVisSample> originalDataRow = new ArrayList<JEVisSample>();
+    public List<JEVisSample> differentialCumulativeConverter(List<JEVisSample> samples) throws JEVisException {
+//        List<JEVisSample> originalDataRow = new ArrayList<JEVisSample>();
         List<JEVisSample> result = new ArrayList<JEVisSample>();
-        originalDataRow.addAll(myAtt1.getAllSamples());
+//        originalDataRow.addAll(myAtt1.getAllSamples());
         BigDecimal value = null;
-        
-        for (JEVisSample o : originalDataRow) {
+          
+        for (JEVisSample o : samples) {
             if (result.isEmpty()) {
-                JEVisSample temp = myAtt1.buildSample(o.getTimestamp(), o.getValue());
-                result.add(temp);
+                JEVisSample a = o.getAttribute().buildSample(o.getTimestamp(), o.getValue());
+                result.add(a);
                 value = new BigDecimal(o.getValueAsString());
             } else if (!result.isEmpty()) {
                 value = new BigDecimal(o.getValueAsString()).add(value);
-                JEVisSample temp2 = myAtt1.buildSample(o.getTimestamp(), value.doubleValue());
+                JEVisSample temp2 = o.getAttribute().buildSample(o.getTimestamp(), value.doubleValue());
                 result.add(temp2);
                 value = new BigDecimal(result.get(result.size()-1).getValueAsString());
             }
