@@ -550,21 +550,35 @@ public class DataCalcSQL implements DataCalc{
      * only split the value as average, it's not komplete
      */
     @Override
-    public List<JEVisSample> splitValues(List<JEVisSample> samples, int period_s, int seg_num) throws JEVisException {  //seg_num:the number of segmentation
+    public List<JEVisSample> splitValues(List<JEVisSample> samples, int period_s, int seg_num,Boolean backward) throws JEVisException {  //seg_num:the number of segmentation
         List<JEVisSample> sample_sv = new ArrayList<JEVisSample>();
         //int count = seg_num;
         BigDecimal value_n = new BigDecimal("0");
         DateTime time;
 
-        for (JEVisSample row : samples) {
-            for (int i = 1; i < (seg_num + 1); i++) {
-                time = row.getTimestamp().minusSeconds((seg_num + 1 - i) * period_s / (seg_num + 1));
-                value_n = new BigDecimal(row.getValueAsString()).divide(new BigDecimal(seg_num + 1), 10,RoundingMode.HALF_UP);//if can't be divided with no remainder,then keep 10 decimals
-                sample_sv.add(row.getAttribute().buildSample(time, value_n.doubleValue()));
-            }
+        if (seg_num >= 2) {
+            for (JEVisSample row : samples) {
+                for (int i = 1; i <= seg_num; i++) {
+                    if(backward==null || backward.equals(false)){
+                        time = row.getTimestamp().minusSeconds((seg_num - i) * period_s / (seg_num));
+                    }else{
+                        time = row.getTimestamp().plusSeconds((i-1) * period_s / (seg_num));
+                    }
+                    
+                    value_n = new BigDecimal(row.getValueAsString()).divide(new BigDecimal(seg_num), 10, RoundingMode.HALF_UP);//if can't be divided with no remainder,then keep 10 decimals
+                    sample_sv.add(row.getAttribute().buildSample(time, value_n.doubleValue()));
+                }
 
-            sample_sv.add(samples.get(0).getAttribute().buildSample(row.getTimestamp(), value_n.doubleValue()));
+//                sample_sv.add(samples.get(0).getAttribute().buildSample(row.getTimestamp(), value_n.doubleValue()));
+            }
+        }else if(seg_num ==1){
+            for (JEVisSample row : samples) {
+                sample_sv.add(samples.get(0).getAttribute().buildSample(row.getTimestamp(), row.getValueAsDouble()));
+            }
+        }else{
+            System.out.println("The data row can't be split.");
         }
+
         return sample_sv;
     }
     
