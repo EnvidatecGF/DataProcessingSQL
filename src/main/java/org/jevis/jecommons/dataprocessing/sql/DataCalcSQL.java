@@ -730,7 +730,7 @@ public class DataCalcSQL implements DataCalc{
      * This function converts  JEVis variable(JEVisAttribute) to the map.
      * one element of the map is "String" not "Double", just for the use of "BigDecimal".
      */
-    public static HashMap<DateTime, String> listToMap(List<JEVisSample> samples) throws JEVisException {
+    private static HashMap<DateTime, String> listToMap(List<JEVisSample> samples) throws JEVisException {
         HashMap<DateTime, String> map = new HashMap<DateTime, String>();
 
         for (JEVisSample d : samples) {
@@ -745,7 +745,7 @@ public class DataCalcSQL implements DataCalc{
      * This function converts the map to JEVis variable(JEVisSample)
      * and sort the daten according to time. 
      */
-    public static List<JEVisSample> mapToSortList(HashMap<DateTime, Double> map, JEVisAttribute sample) throws JEVisException {
+    private static List<JEVisSample> mapToSortList(HashMap<DateTime, Double> map, JEVisAttribute sample) throws JEVisException {
         List<JEVisSample> list_sort = new ArrayList<JEVisSample>();
         Iterator iter = map.entrySet().iterator();
 

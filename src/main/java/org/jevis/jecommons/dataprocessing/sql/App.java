@@ -1,6 +1,5 @@
 package org.jevis.jecommons.dataprocessing.sql;
 
-import java.text.ParseException;
 import java.util.List;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisSample;
