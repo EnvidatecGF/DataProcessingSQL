@@ -20,14 +20,13 @@ import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisSample;
-import org.jevis.jecommons.dataprocessing.DataCalc_Interface;
 import org.joda.time.DateTime;
 
 /**
  *
  * @author gf
  */
-public class DataCalc implements DataCalc_Interface{
+public class DataCalc implements DataCalculation{
 
     @Override
     public List<JEVisSample> addition(List<JEVisSample> samples, double value) throws JEVisException {
