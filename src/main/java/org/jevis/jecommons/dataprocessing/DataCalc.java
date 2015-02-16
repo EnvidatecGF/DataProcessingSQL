@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jevis.jecommons.dataprocessing.sql;
+package org.jevis.jecommons.dataprocessing;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -20,14 +20,14 @@ import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisSample;
-import org.jevis.jecommons.dataprocessing.DataCalc;
+import org.jevis.jecommons.dataprocessing.DataCalc_Interface;
 import org.joda.time.DateTime;
 
 /**
  *
  * @author gf
  */
-public class DataCalcSQL implements DataCalc{
+public class DataCalc implements DataCalc_Interface{
 
     @Override
     public List<JEVisSample> addition(List<JEVisSample> samples, double value) throws JEVisException {

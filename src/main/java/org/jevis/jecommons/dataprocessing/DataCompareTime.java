@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jevis.jecommons.dataprocessing.sql;
+package org.jevis.jecommons.dataprocessing;
 
 import java.util.Comparator;
 import java.util.logging.Level;

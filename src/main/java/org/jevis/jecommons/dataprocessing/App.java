@@ -1,4 +1,4 @@
-package org.jevis.jecommons.dataprocessing.sql;
+package org.jevis.jecommons.dataprocessing;
 
 import java.util.List;
 import org.jevis.api.JEVisException;
