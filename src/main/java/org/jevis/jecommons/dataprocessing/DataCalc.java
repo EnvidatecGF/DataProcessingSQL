@@ -835,6 +835,7 @@ public class DataCalc implements DataCalculation{
 //        List<JEVisSample> temp1 = new ArrayList();
 //        List<JEVisSample> temp2 = new ArrayList();
         List<JEVisSample> temp_result = new ArrayList();
+        DecimalFormat df = new DecimalFormat("####.000");
 
         //check if the length of two data rows are same, if not, then division function will not be implenmented.         
         if (samples1.size() != samples2.size()) {
@@ -847,10 +848,10 @@ public class DataCalc implements DataCalculation{
         for (JEVisSample o1 : samples1) {
             loop:
             for (JEVisSample o2 : samples2) {
-                //compare the timestample one by one,when equals, then multip, when not equals, then find next.
+                //compare the timestample one by one,when equals, then division, when not equals, then find next.
                 if (o1.getTimestamp().equals(o2.getTimestamp())) {
                     if (o2.getValueAsDouble() != 0) {
-                        JEVisSample a =o1.getAttribute().buildSample(o1.getTimestamp(), o1.getValueAsDouble() / o2.getValueAsDouble(), "finish");
+                        JEVisSample a =o1.getAttribute().buildSample(o1.getTimestamp(), df.parse(df.format(o1.getValueAsDouble() / o2.getValueAsDouble())), "finish");
                         temp_result.add(a);
                         break loop;
                     } else {
@@ -922,19 +923,19 @@ public class DataCalc implements DataCalculation{
         return result;
     }
     
-    //new added
-    //Minus shifttime to original timeaxis. 
-    public List<JEVisSample> minusShiftTime(List<JEVisSample> samples, int shiftTime) throws ParseException, JEVisException {
-
-//        List<JEVisSample> temp = new ArrayList();
-        List<JEVisSample> result = new ArrayList();
-//        temp.addAll(myAtt1.getAllSamples());
-        for (JEVisSample o : samples) {
-            JEVisSample a = o.getAttribute().buildSample(o.getTimestamp().minusSeconds(shiftTime),o.getValueAsDouble(), "Finish");
-            result.add(a);
-        }
-        return result;
-    }
+//    //new added
+//    //Minus shifttime to original timeaxis. 
+//    public List<JEVisSample> minusShiftTime(List<JEVisSample> samples, int shiftTime) throws ParseException, JEVisException {
+//
+////        List<JEVisSample> temp = new ArrayList();
+//        List<JEVisSample> result = new ArrayList();
+////        temp.addAll(myAtt1.getAllSamples());
+//        for (JEVisSample o : samples) {
+//            JEVisSample a = o.getAttribute().buildSample(o.getTimestamp().minusSeconds(shiftTime),o.getValueAsDouble(), "Finish");
+//            result.add(a);
+//        }
+//        return result;
+//    }
     
     
  
@@ -962,10 +963,11 @@ public class DataCalc implements DataCalculation{
     public List<JEVisSample> derivation(List<JEVisSample> samples, int period) throws ParseException, JEVisException {
 //        List<JEVisSample> temp_original_datarow = new ArrayList();
         List<JEVisSample> result = new ArrayList();
+          DecimalFormat df = new DecimalFormat("####.000");
 //        temp_original_datarow.addAll(myAtt1.getAllSamples());
         for (JEVisSample o : samples) {
             if (result.size() < (samples.size() - 1)) {
-                JEVisSample a = o.getAttribute().buildSample(o.getTimestamp(), ((samples.get(samples.indexOf(o) + 1).getValueAsDouble() - o.getValueAsDouble()) / period), "finish");
+                JEVisSample a = o.getAttribute().buildSample(o.getTimestamp(), df.parse(df.format(((samples.get(samples.indexOf(o) + 1).getValueAsDouble() - o.getValueAsDouble()) / period))), "finish");
                 result.add(a);
             }
         }
