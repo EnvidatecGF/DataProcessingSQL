@@ -20,6 +20,7 @@ import org.jevis.api.JEVisDataSource;
 import org.jevis.api.JEVisException;
 import org.jevis.api.JEVisObject;
 import org.jevis.api.JEVisSample;
+import org.jevis.jecommons.dataprocessing.DataCalculation;
 import org.joda.time.DateTime;
 
 /**
@@ -99,7 +100,7 @@ public class DataCalc implements DataCalculation{
                  
     /*
     the combination of high pass filter und low pass filter
-    The input parameter „delete“ decides, whether the improper values 
+    The input parameter ?delete¡° decides, whether the improper values 
     will be deleted or replaced by  the upper limit and  the lower limit.
     */
     @Override
@@ -457,9 +458,9 @@ public class DataCalc implements DataCalculation{
 
     /*
      * merge the values at some timestamps to one timestamp, the values will be added. 
-     * The input parameter „begin_time“ is the theoretic begin time(the first sampled time) of the data row. 
-     * The input parameter „period_s“ should be time(period) and it's unit is  second. 
-     * The last input parameter „meg_num“ means, how many sampled value will be merged.
+     * The input parameter ?begin_time¡° is the theoretic begin time(the first sampled time) of the data row. 
+     * The input parameter ?period_s¡° should be time(period) and it's unit is  second. 
+     * The last input parameter ?meg_num¡° means, how many sampled value will be merged.
      * (millinsecond for year is too lang,already beyound the int,so the smallest unit of time is here second.)
      */
     @Override
@@ -487,7 +488,7 @@ public class DataCalc implements DataCalculation{
 
     /*
     delete the value,that is not bigger or smaller than it's previous value in one percentage value. 
-    The inputparameter „percent“ is the percentage value, which is decided by enduser.
+    The inputparameter ?percent¡° is the percentage value, which is decided by enduser.
     */
     @Override
     public List<JEVisSample> precisionFilter(List<JEVisSample> samples, double percent) throws JEVisException {
@@ -995,5 +996,4 @@ public class DataCalc implements DataCalculation{
         }
         return result;
     }
-
 }
