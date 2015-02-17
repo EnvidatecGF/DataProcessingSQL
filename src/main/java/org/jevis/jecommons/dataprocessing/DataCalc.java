@@ -945,7 +945,7 @@ public class DataCalc implements DataCalculation{
         List<JEVisSample> result = new ArrayList();
 //        temp_original_datarow.addAll(myAtt1.getAllSamples());
         for (JEVisSample o : samples) {
-            if (o.getValueAsDouble() < setNumber) {
+            if (o.getValueAsDouble() > setNumber) {
                 JEVisSample a = o.getAttribute().buildSample(o.getTimestamp(), setNumber, "finish");
                 result.add(a);
             } else {
